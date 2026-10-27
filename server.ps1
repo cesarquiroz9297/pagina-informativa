@@ -444,7 +444,9 @@ WHERE IdEstadistica = 1
             $tipoContenido = if ($tiposMime.ContainsKey($extension)) { $tiposMime[$extension] } else { "application/octet-stream" }
             $bytesArchivo = [System.IO.File]::ReadAllBytes($archivoFisico)
             $res.ContentType = $tipoContenido
+            $res.AddHeader("Cache-Control", "no-store, no-cache, must-revalidate")
             $res.AddHeader("Access-Control-Allow-Origin", "*")
+            $res.AddHeader("Access-Control-Allow-Private-Network", "true")
             $res.ContentLength64 = $bytesArchivo.Length
             $res.StatusCode = 200
             $res.OutputStream.Write($bytesArchivo, 0, $bytesArchivo.Length)

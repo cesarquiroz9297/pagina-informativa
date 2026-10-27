@@ -100,12 +100,12 @@ IF OBJECT_ID(N'dbo.NoticiasEventos', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.NoticiasEventos (
         IdNoticia INT IDENTITY(1,1) PRIMARY KEY,
-        Titulo NVARCHAR(200) NOT NULL,
+        Titulo NVARCHAR(MAX) NOT NULL,
         Categoria NVARCHAR(40) NOT NULL, -- civico, academico, aniversario, deportes
-        EtiquetaVisible NVARCHAR(60) NOT NULL,
-        UbicacionFecha NVARCHAR(120) NOT NULL,
-        Resumen NVARCHAR(600) NOT NULL,
-        ImagenUrl NVARCHAR(500) NOT NULL,
+        EtiquetaVisible NVARCHAR(200) NOT NULL,
+        UbicacionFecha NVARCHAR(300) NOT NULL,
+        Resumen NVARCHAR(MAX) NOT NULL,
+        ImagenUrl NVARCHAR(MAX) NOT NULL,
         Destacado BIT NOT NULL DEFAULT 1,
         FechaPublicacion DATETIME NOT NULL DEFAULT GETDATE()
     );

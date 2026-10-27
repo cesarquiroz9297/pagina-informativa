@@ -191,7 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
-  const API_SQL_LOCAL = 'https://len-quarterly-papua-camcorders.trycloudflare.com';
+  const API_SQL_LOCAL =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? ''
+      : 'https://len-quarterly-papua-camcorders.trycloudflare.com';
 
   // Resolver imágenes subidas desde el dispositivo (img/eventos/...) para que se vean también en GitHub Pages
   const resolverUrlImagen = (url) => {
@@ -363,10 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
           const imgResuelta = resolverUrlImagen(item.ImagenUrl);
           return `
           <article class="galeria-item bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm tarjeta-interactiva" data-categoria="${item.Categoria}">
-            <div class="relative h-56 overflow-hidden">
+            <div class="relative h-56 overflow-hidden bg-slate-100">
               <img
                 src="${imgResuelta}"
                 alt="${item.Titulo}"
+                onerror="this.onerror=null;this.src='img/logo.png';"
                 class="w-full h-full object-cover"
               />
               <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${colorBadge} text-white shadow">

@@ -9,7 +9,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
-  const API_SQL_LOCAL = 'https://len-quarterly-papua-camcorders.trycloudflare.com';
+  const API_SQL_LOCAL =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? ''
+      : 'https://len-quarterly-papua-camcorders.trycloudflare.com';
 
   // Semilla inicial idéntica a la base de datos SQL Server 2022 (DB_IE82115_JFSC)
   const obtenerSemillaInicial = () => ({
@@ -438,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (item) item.Estado = nuevoEstado;
         guardarBdLocal(datosSql);
 
-        if (modoSqlServerReal) {
+        try {
           await fetch(`${API_SQL_LOCAL}/api/solicitudes/estado`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -448,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
               observacion: `Actualizado a ${nuevoEstado}`,
             }),
           });
-        }
+        } catch (err) {}
         mostrarNotificacion(`Expediente actualizado a "${nuevoEstado}".`);
         cargarDatosDesdeSqlServer();
       });
@@ -460,13 +463,13 @@ document.addEventListener('DOMContentLoaded', () => {
         datosSql.solicitudes = datosSql.solicitudes.filter((s) => s.IdSolicitud !== idSolicitud);
         guardarBdLocal(datosSql);
 
-        if (modoSqlServerReal) {
+        try {
           await fetch(`${API_SQL_LOCAL}/api/solicitudes/eliminar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idSolicitud }),
           });
-        }
+        } catch (err) {}
         mostrarNotificacion('Solicitud eliminada correctamente.');
         cargarDatosDesdeSqlServer();
       });
@@ -562,8 +565,8 @@ document.addEventListener('DOMContentLoaded', () => {
         (n) => `
       <div class="rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 flex flex-col justify-between">
         <div>
-          <div class="relative h-36 overflow-hidden">
-            <img src="${resolverUrlImagen(n.ImagenUrl)}" alt="${n.Titulo}" class="w-full h-full object-cover" />
+        <div class=" relative h-36 overflow-hidden bg-slate-100">
+            <img src="${resolverUrlImagen(n.ImagenUrl)}" alt="${n.Titulo}" onerror="this.onerror=null;this.src='img/logo.png';" class="w-full h-full object-cover" />
             <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-faustiniano-900 text-white">
               ${n.EtiquetaVisible}
             </span>
@@ -619,13 +622,13 @@ document.addEventListener('DOMContentLoaded', () => {
         datosSql.noticias = datosSql.noticias.filter((n) => n.IdNoticia !== idNoticia);
         guardarBdLocal(datosSql);
 
-        if (modoSqlServerReal) {
+        try {
           await fetch(`${API_SQL_LOCAL}/api/noticias/eliminar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idNoticia }),
           });
-        }
+        } catch (err) {}
         mostrarNotificacion('Evento eliminado correctamente.');
         cargarDatosDesdeSqlServer();
       });
@@ -684,13 +687,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     guardarBdLocal(datosSql);
 
-    if (modoSqlServerReal) {
-      await fetch(`${API_SQL_LOCAL}/api/noticias/guardar`, {
+    try {
+      const resp = await fetch(`${API_SQL_LOCAL}/api/noticias/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-    }
+      if (!resp.ok) throw new Error('Error al guardar en SQL');
+      modoSqlServerReal = true;
+    } catch (err) {}
 
     limpiarFormularioNoticia();
     mostrarNotificacion('Noticia guardada y publicada en la página principal.');
@@ -744,13 +749,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     guardarBdLocal(datosSql);
 
-    if (modoSqlServerReal) {
+    try {
       await fetch(`${API_SQL_LOCAL}/api/estadisticas/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-    }
+    } catch (err) {}
 
     mostrarNotificacion('Contadores y vacantes actualizados exitosamente.');
     cargarDatosDesdeSqlServer();
@@ -789,13 +794,13 @@ document.addEventListener('DOMContentLoaded', () => {
         datosSql.comunicados = datosSql.comunicados.filter((c) => c.IdComunicado !== idComunicado);
         guardarBdLocal(datosSql);
 
-        if (modoSqlServerReal) {
+        try {
           await fetch(`${API_SQL_LOCAL}/api/comunicados/eliminar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idComunicado }),
           });
-        }
+        } catch (err) {}
         mostrarNotificacion('Comunicado eliminado.');
         cargarDatosDesdeSqlServer();
       });
@@ -820,13 +825,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     guardarBdLocal(datosSql);
 
-    if (modoSqlServerReal) {
+    try {
       await fetch(`${API_SQL_LOCAL}/api/comunicados/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-    }
+    } catch (err) {}
 
     formComunicado.reset();
     mostrarNotificacion('Comunicado oficial publicado.');
