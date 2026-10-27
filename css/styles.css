@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Hoja de Estilos Personalizados - I.E. N° 82115 "José Faustino Sánchez Carrión"
+   Ubicación: Huamachuco, Sánchez Carrión, La Libertad
+   Autor: César Quiroz
+   ========================================================================== */
+
+/* Variables de color institucionales */
+:root {
+  --color-primario: #0f2957;      /* Azul marino institucional */
+  --color-secundario: #1e40af;    /* Azul real educativo */
+  --color-dorado: #d97706;        /* Dorado insignia / Solitario de Sayán */
+  --color-dorado-claro: #fbbf24;  /* Ámbar luminoso */
+  --color-acento: #b91c1c;        /* Rojo patriótico republicano */
+}
+
+/* Comportamiento de desplazamiento suave en toda la página */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+/* Tipografía base y suavizado de fuentes */
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.font-serif-institucional {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Fondo Hero con superposición degradada elegante */
+.hero-bg {
+  background-image:
+    linear-gradient(125deg, rgba(10, 25, 54, 0.94) 0%, rgba(15, 41, 87, 0.88) 55%, rgba(180, 83, 9, 0.72) 100%),
+    url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Patrón geométrico sutil para secciones institucionales */
+.patron-institucional {
+  background-color: #0f2957;
+  background-image: radial-gradient(rgba(251, 191, 36, 0.14) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Efecto vidrio esmerilado (Glassmorphism) */
+.vidrio-navbar {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.vidrio-oscuro {
+  background: rgba(15, 41, 87, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+/* Clases de animación al hacer scroll (Scroll Reveal) */
+.revelar {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revelar-izquierda {
+  opacity: 0;
+  transform: translateX(-36px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revelar-derecha {
+  opacity: 0;
+  transform: translateX(36px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revelar.activo,
+.revelar-izquierda.activo,
+.revelar-derecha.activo {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Retardos escalonados para grillas de tarjetas */
+.retardo-100 { transition-delay: 100ms; }
+.retardo-200 { transition-delay: 200ms; }
+.retardo-300 { transition-delay: 300ms; }
+.retardo-400 { transition-delay: 400ms; }
+
+/* Efecto de elevación en tarjetas interactivas */
+.tarjeta-interactiva {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tarjeta-interactiva:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 22px 40px -12px rgba(15, 41, 87, 0.16);
+}
+
+/* Indicador de enlace activo en la barra de navegación */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, #1e40af, #d97706);
+  transition: width 0.3s ease, left 0.3s ease;
+  border-radius: 99px;
+}
+
+.nav-link:hover::after,
+.nav-link.activo::after {
+  width: 100%;
+  left: 0;
+}
+
+/* Animación flotante suave para insignias y elementos decorativos */
+@keyframes flotarSuave {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animar-flotar {
+  animation: flotarSuave 5s ease-in-out infinite;
+}
+
+/* Zoom suave en imágenes de la galería escolar */
+.galeria-item img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.galeria-item:hover img {
+  transform: scale(1.08);
+}
+
+/* Personalización de la barra de desplazamiento */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e3a8a;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d97706;
+}

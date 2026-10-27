@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Panel Administrativo Institucional conectado a SQL Server 2022 (DB_IE82115_JFSC)
+  Institución: I.E. N° 82115 "José Faustino Sánchez Carrión" - Huamachuco
+  UGEL Sánchez Carrión - DRE La Libertad
+  Autor: César Quiroz
+  ============================================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="Autor: César Quiroz" />
+  <title>Panel Administrativo | I.E. N° 82115 "José Faustino Sánchez Carrión"</title>
+  <link rel="icon" type="image/png" href="img/logo.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Íconos FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            faustiniano: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              700: '#1e40af',
+              800: '#1e3a8a',
+              900: '#0f2957',
+              950: '#091936',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- ========================================================================
+       VISTA 1: PANTALLA DE LOGIN INSTITUCIONAL
+       ======================================================================== -->
+  <div id="vista-login" class="min-h-screen flex items-center justify-center p-4 patron-institucional">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
+      <!-- Encabezado con Insignia Oficial -->
+      <div class="bg-gradient-to-br from-faustiniano-950 via-faustiniano-900 to-blue-900 p-7 text-center text-white relative">
+        <img
+          src="img/logo.png"
+          alt="Insignia Oficial I.E. N° 82115 José Faustino Sánchez Carrión"
+          class="w-20 h-24 object-contain mx-auto mb-3 bg-white/95 p-1.5 rounded-2xl shadow-lg"
+        />
+        <span class="px-3 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-amber-500 text-faustiniano-950">
+          Sistema de Gestión Intranet
+        </span>
+        <h1 class="text-xl font-extrabold mt-2">I.E. N° 82115 "José Faustino Sánchez Carrión"</h1>
+        <p class="text-xs text-slate-300 mt-1">Huamachuco &bull; UGEL Sánchez Carrión &bull; SQL Server 2022</p>
+      </div>
+
+      <!-- Formulario de Acceso -->
+      <div class="p-7 space-y-5">
+        <div id="error-login" class="hidden p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+          <span id="texto-error-login">Credenciales inválidas</span>
+        </div>
+
+        <form id="form-login" class="space-y-4">
+          <div>
+            <label for="login-usuario" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Usuario Institucional
+            </label>
+            <div class="relative">
+              <i class="fa-solid fa-user-shield absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+              <input
+                type="text"
+                id="login-usuario"
+                value="admin"
+                required
+                placeholder="Ej. admin"
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="login-clave" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Contraseña de Acceso
+            </label>
+            <div class="relative">
+              <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+              <input
+                type="password"
+                id="login-clave"
+                value="faustiniano2026"
+                required
+                placeholder="••••••••••••"
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            id="btn-ingresar"
+            class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-sm shadow-lg transition flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Ingresar al Panel Administrativo</span>
+          </button>
+        </form>
+
+        <!-- Credenciales de acceso rápido para el administrador -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1">
+          <p class="font-bold text-faustiniano-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-database text-amber-600"></i>
+            <span>Usuarios en SQL Server (`dbo.UsuariosAdministradores`):</span>
+          </p>
+          <p>&bull; Dirección: <code>admin</code> / Clave: <code>faustiniano2026</code></p>
+          <p>&bull; Secretaría: <code>secretaria</code> / Clave: <code>huamachuco2026</code></p>
+        </div>
+
+        <div class="pt-2 text-center border-t border-slate-100 flex items-center justify-between text-xs">
+          <a href="index.html" class="font-bold text-blue-800 hover:underline inline-flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Portal Web Público
+          </a>
+          <span class="text-slate-400">Autor: César Quiroz</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       VISTA 2: DASHBOARD DEL PANEL ADMINISTRATIVO
+       ======================================================================== -->
+  <div id="vista-dashboard" class="hidden flex-1 flex flex-col">
+
+    <!-- Barra Superior del Administrador -->
+    <header class="bg-faustiniano-950 text-white border-b border-white/10 sticky top-0 z-40 shadow-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="img/logo.png" alt="Logo I.E. 82115" class="w-11 h-12 object-contain bg-white p-1 rounded-xl" />
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500 text-faustiniano-950">
+                Panel Admin
+              </span>
+              <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                SQL Server 2022: Conectado (DB_IE82115_JFSC)
+              </span>
+            </div>
+            <h1 class="text-sm sm:text-base font-extrabold text-white mt-0.5">
+              I.E. N° 82115 "José Faustino Sánchez Carrión" - Huamachuco
+            </h1>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:block text-right text-xs">
+            <p id="admin-nombre-activo" class="font-bold text-amber-300">Dirección General I.E. 82115</p>
+            <p id="admin-cargo-activo" class="text-slate-400">SuperAdmin</p>
+          </div>
+          <a
+            href="index.html"
+            target="_blank"
+            class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition inline-flex items-center gap-1.5 border border-white/15"
+          >
+            <i class="fa-solid fa-up-right-from-square text-amber-400"></i>
+            <span>Ver Web Pública</span>
+          </a>
+          <button
+            type="button"
+            id="btn-cerrar-sesion"
+            class="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition inline-flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-power-off"></i>
+            <span>Salir</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido Principal del Dashboard -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+      <!-- Tarjetas KPI de Resumen en Tiempo Real desde SQL Server -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Solicitudes Totales</p>
+            <p id="kpi-total-solicitudes" class="text-3xl font-extrabold text-faustiniano-900 mt-1">0</p>
+            <p class="text-xs text-slate-500 mt-0.5">Tabla: SolicitudesAdmision</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-800 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-inbox"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-700">Pendientes de Atención</p>
+            <p id="kpi-pendientes" class="text-3xl font-extrabold text-amber-600 mt-1">0</p>
+            <p class="text-xs text-slate-500 mt-0.5">Requieren respuesta</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">Noticias y Eventos</p>
+            <p id="kpi-noticias" class="text-3xl font-extrabold text-emerald-600 mt-1">0</p>
+            <p class="text-xs text-slate-500 mt-0.5">Tabla: NoticiasEventos</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-newspaper"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-purple-700">Vacantes 2026</p>
+            <p id="kpi-vacantes" class="text-3xl font-extrabold text-purple-700 mt-1">0</p>
+            <p class="text-xs text-slate-500 mt-0.5">Inicial, Primaria y Secundaria</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navegación por Pestañas del Panel Administrativo -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-3">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" data-tab="tab-solicitudes" class="btn-tab-admin px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-faustiniano-900 text-white shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-file-signature text-amber-400"></i>
+            <span>1. Mesa de Partes y Matrícula</span>
+          </button>
+          <button type="button" data-tab="tab-noticias" class="btn-tab-admin px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-camera-retro text-amber-600"></i>
+            <span>2. Noticias y Galería Escolar</span>
+          </button>
+          <button type="button" data-tab="tab-estadisticas" class="btn-tab-admin px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-chart-Simple text-amber-600"></i>
+            <span>3. Contadores y Vacantes</span>
+          </button>
+          <button type="button" data-tab="tab-comunicados" class="btn-tab-admin px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-bullhorn text-amber-600"></i>
+            <span>4. Comunicados Oficiales</span>
+          </button>
+        </div>
+
+        <button type="button" id="btn-recargar-sql" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-faustiniano-900 border border-slate-300 text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-solid fa-rotate"></i>
+          <span>Sincronizar con SQL Server</span>
+        </button>
+      </div>
+
+      <!-- Notificación Toast Global -->
+      <div id="notificacion-admin" class="hidden p-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-circle-check text-lg"></i>
+          <span id="texto-notificacion-admin">Cambios guardados en SQL Server 2022</span>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           PESTAÑA 1: BANDEJA DE SOLICITUDES DE MATRÍCULA E INFORMES
+           ==================================================================== -->
+      <section id="tab-solicitudes" class="panel-tab space-y-5">
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-extrabold text-faustiniano-900">
+                Bandeja de Solicitudes de Matrícula y Mesa de Partes (`dbo.SolicitudesAdmision`)
+              </h2>
+              <p class="text-xs text-slate-500">
+                Cada vez que un apoderado envía el formulario en la página pública, el registro aparece aquí automáticamente desde SQL Server.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <input
+                type="text"
+                id="buscar-solicitud"
+                placeholder="Buscar por DNI, nombre o código..."
+                class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-700 w-60"
+              />
+              <select id="filtro-estado-solicitud" class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-semibold">
+                <option value="Todos">Todos los estados</option>
+                <option value="Pendiente">Pendientes</option>
+                <option value="En Revisión">En Revisión</option>
+                <option value="Atendido">Atendidos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase text-[11px] font-extrabold border-y border-slate-200">
+                  <th class="py-3 px-4">Expediente / Fecha</th>
+                  <th class="py-3 px-4">Apoderado y DNI</th>
+                  <th class="py-3 px-4">Nivel y Motivo</th>
+                  <th class="py-3 px-4">Mensaje</th>
+                  <th class="py-3 px-4">Estado en SQL</th>
+                  <th class="py-3 px-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-solicitudes-body" class="divide-y divide-slate-200"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           PESTAÑA 2: GESTOR DE NOTICIAS, EVENTOS Y GALERÍA ESCOLAR
+           ==================================================================== -->
+      <section id="tab-noticias" class="panel-tab hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+          <!-- Formulario para Publicar o Editar Noticia -->
+          <div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <h2 id="titulo-form-noticia" class="text-lg font-extrabold text-faustiniano-900">
+              Publicar Nueva Noticia o Evento Escolar
+            </h2>
+            <p class="text-xs text-slate-500">
+              Se guardará en la tabla <code>dbo.NoticiasEventos</code> de SQL Server 2022 y se mostrará en la página pública.
+            </p>
+
+            <form id="form-noticia" class="space-y-3.5 text-xs sm:text-sm">
+              <input type="hidden" id="noticia-id" value="0" />
+
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Título de la Actividad / Noticia *</label>
+                <input type="text" id="noticia-titulo" required placeholder="Ej. Primer Puesto en Concurso Provincial de Matemática" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Categoría de Filtro *</label>
+                  <select id="noticia-categoria" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white">
+                    <option value="civico">Cívico Huamachuco</option>
+                    <option value="academico">Concursos Académicos</option>
+                    <option value="aniversario">Aniversario</option>
+                    <option value="deportes">Deportes</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Etiqueta Visible *</label>
+                  <input type="text" id="noticia-etiqueta" required placeholder="Ej. Logro Académico" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Lugar o Subtítulo *</label>
+                <input type="text" id="noticia-ubicacion" required placeholder="Ej. Plaza de Armas de Huamachuco" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300" />
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase text-slate-700">
+                  Fotografía del Evento (Subir desde tu dispositivo) *
+                </label>
+
+                <!-- Botón selector de archivo desde el dispositivo -->
+                <label
+                  for="noticia-archivo-imagen"
+                  class="flex flex-col items-center justify-center w-full p-4 border-2 border-dashed border-blue-300 rounded-2xl bg-blue-50/50 hover:bg-blue-50 cursor-pointer transition text-center"
+                >
+                  <i class="fa-solid fa-cloud-arrow-up text-2xl text-blue-700 mb-1"></i>
+                  <span id="nombre-archivo-seleccionado" class="text-xs font-bold text-faustiniano-900">
+                    Haz clic aquí para elegir una foto de tu PC o celular
+                  </span>
+                  <span class="text-[11px] text-slate-500 mt-0.5">
+                    Formatos: JPG, PNG o WEBP (se guarda automáticamente en la carpeta img/eventos/)
+                  </span>
+                  <input
+                    type="file"
+                    id="noticia-archivo-imagen"
+                    accept="image/*"
+                    class="hidden"
+                  />
+                </label>
+
+                <!-- Vista previa instantánea de la imagen cargada -->
+                <div id="contenedor-previa-imagen" class="relative h-36 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                  <img
+                    id="vista-previa-imagen"
+                    src="img/logo.png"
+                    alt="Vista previa de la noticia"
+                    class="w-full h-full object-cover"
+                  />
+                  <span id="badge-estado-imagen" class="absolute bottom-2 right-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-900/80 text-white">
+                    Vista Previa
+                  </span>
+                </div>
+
+                <!-- Campo oculto que almacena la ruta generada automáticamente -->
+                <input
+                  type="hidden"
+                  id="noticia-imagen"
+                  value="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Resumen de la Noticia *</label>
+                <textarea id="noticia-resumen" rows="3" required placeholder="Describa brevemente la actividad escolar..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300"></textarea>
+              </div>
+
+              <div class="flex items-center gap-2 pt-2">
+                <button type="submit" class="flex-1 py-3 rounded-xl bg-faustiniano-900 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm transition">
+                  <i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar en SQL Server
+                </button>
+                <button type="button" id="btn-cancelar-edicion-noticia" class="hidden px-4 py-3 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Listado de Noticias Actuales -->
+          <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-lg font-extrabold text-faustiniano-900">
+              Noticias y Eventos Registrados en SQL Server
+            </h3>
+            <div id="lista-noticias-admin" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           PESTAÑA 3: CONTADORES INSTITUCIONALES Y VACANTES POR NIVEL
+           ==================================================================== -->
+      <section id="tab-estadisticas" class="panel-tab hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm max-w-3xl">
+          <h2 class="text-lg font-extrabold text-faustiniano-900 mb-1">
+            Actualizar Estadísticas de Portada y Vacantes (`dbo.EstadisticasInstitucionales` y `dbo.VacantesPorNivel`)
+          </h2>
+          <p class="text-xs text-slate-500 mb-6">
+            Modifica los números que se animan en la portada principal y las vacantes disponibles de los 3 niveles educativos.
+          </p>
+
+          <form id="form-estadisticas" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Años de Trayectoria</label>
+                <input type="number" id="est-anios" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Plana Docente Calificada</label>
+                <input type="number" id="est-docentes" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Total de Estudiantes Faustinianos</label>
+                <input type="number" id="est-estudiantes" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Total de Ambientes Equipados</label>
+                <input type="number" id="est-ambientes" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold" />
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200">
+              <h3 class="text-sm font-extrabold text-faustiniano-900 mb-3 uppercase tracking-wider">
+                Vacantes Disponibles por Nivel Educativo (2026)
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-amber-800 mb-1">Vacantes Nivel Inicial</label>
+                  <input type="number" id="vac-inicial" required class="w-full px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50/40 text-sm font-bold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-blue-800 mb-1">Vacantes Nivel Primaria</label>
+                  <input type="number" id="vac-primaria" required class="w-full px-4 py-2.5 rounded-xl border border-blue-300 bg-blue-50/40 text-sm font-bold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-red-800 mb-1">Vacantes Nivel Secundaria</label>
+                  <input type="number" id="vac-secundaria" required class="w-full px-4 py-2.5 rounded-xl border border-red-300 bg-red-50/40 text-sm font-bold" />
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-sm shadow-md transition">
+              <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Actualizar Contadores y Vacantes en SQL Server
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           PESTAÑA 4: COMUNICADOS OFICIALES DE DIRECCIÓN
+           ==================================================================== -->
+      <section id="tab-comunicados" class="panel-tab hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <h2 class="text-lg font-extrabold text-faustiniano-900">Emitir Comunicado Oficial</h2>
+            <form id="form-comunicado" class="space-y-3.5 text-sm">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Título del Comunicado *</label>
+                <input type="text" id="com-titulo" required placeholder="Ej. Suspensión de labores o Entrega de Libretas" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Dirigido a *</label>
+                <input type="text" id="com-dirigido" required value="Padres de Familia y Estudiantes" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Mensaje del Comunicado *</label>
+                <textarea id="com-detalle" rows="3" required placeholder="Escriba el comunicado oficial..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300"></textarea>
+              </div>
+              <button type="submit" class="w-full py-3 rounded-xl bg-faustiniano-900 hover:bg-blue-800 text-white font-bold text-sm transition">
+                <i class="fa-solid fa-bullhorn mr-1.5"></i> Publicar Comunicado
+              </button>
+            </form>
+          </div>
+
+          <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-lg font-extrabold text-faustiniano-900">Comunicados Activos (`dbo.ComunicadosOficiales`)</h3>
+            <div id="lista-comunicados-admin" class="space-y-3"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer del Sistema Administrativo -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+        <span>Sistema de Gestión Institucional &bull; I.E. N° 82115 "José Faustino Sánchez Carrión" - Huamachuco</span>
+        <span class="font-bold text-faustiniano-900">Desarrollado por Autor: César Quiroz</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Script del Panel Administrativo -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
