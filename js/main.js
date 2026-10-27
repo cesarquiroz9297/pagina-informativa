@@ -190,106 +190,120 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === modalComunicado) cerrarModalComunicado();
   });
 
-  // Sincronizar Estadísticas, Vacantes, Comunicados y Galería desde SQL Server 2022
+  const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
+
+  const aplicarDatosEnPortada = (data) => {
+    if (!data) return;
+
+    // 1. Actualizar contadores si existen datos en dbo.EstadisticasInstitucionales
+    if (data.estadisticas) {
+      const cAnios = document.getElementById('contador-anios');
+      const cDoc = document.getElementById('contador-docentes');
+      const cEst = document.getElementById('contador-estudiantes');
+      const cAmb = document.getElementById('contador-ambientes');
+
+      if (cAnios) cAnios.setAttribute('data-meta', data.estadisticas.AniosTrayectoria);
+      if (cDoc) cDoc.setAttribute('data-meta', data.estadisticas.TotalDocentes);
+      if (cEst) cEst.setAttribute('data-meta', data.estadisticas.TotalEstudiantes);
+      if (cAmb) cAmb.setAttribute('data-meta', data.estadisticas.TotalAmbientes);
+
+      if (contadoresIniciados) {
+        animarContadores();
+      }
+    }
+
+    // 2. Actualizar Vacantes Disponibles por Nivel desde dbo.VacantesPorNivel
+    const listaVacantes = Array.isArray(data.vacantes) ? data.vacantes : data.vacantes ? [data.vacantes] : [];
+    listaVacantes.forEach((vac) => {
+      const badgeVac = document.getElementById(`badge-vacantes-${vac.ClaveNivel}`);
+      if (badgeVac) {
+        badgeVac.textContent = `${vac.VacantesDisponibles} Vacantes`;
+      }
+    });
+
+    // 3. Actualizar Comunicado Oficial activo desde dbo.ComunicadosOficiales
+    const listaComunicados = Array.isArray(data.comunicados) ? data.comunicados : data.comunicados ? [data.comunicados] : [];
+    if (listaComunicados.length > 0) {
+      const ultimoCom = listaComunicados[0];
+      const elTitulo = document.getElementById('comunicado-titulo');
+      const elDetalle = document.getElementById('comunicado-detalle');
+      const elDirigido = document.getElementById('comunicado-dirigido');
+      const elFecha = document.getElementById('comunicado-fecha');
+
+      if (elTitulo) elTitulo.textContent = ultimoCom.Titulo;
+      if (elDetalle) elDetalle.textContent = ultimoCom.Detalle;
+      if (elDirigido) elDirigido.textContent = ultimoCom.DirigidoA;
+      if (elFecha) elFecha.textContent = ultimoCom.FechaEmision || 'Huamachuco, 2026';
+
+      if (!sessionStorage.getItem('comunicado_visto_ie82115')) {
+        sessionStorage.setItem('comunicado_visto_ie82115', '1');
+        setTimeout(abrirModalComunicado, 1200);
+      }
+    }
+
+    // 4. Renderizar Noticias y Eventos desde dbo.NoticiasEventos
+    const grillaGaleria = document.getElementById('grilla-galeria-eventos');
+    const listaNoticias = Array.isArray(data.noticias) ? data.noticias : data.noticias ? [data.noticias] : [];
+
+    if (grillaGaleria && listaNoticias.length > 0) {
+      const coloresCategoria = {
+        civico: 'bg-red-600',
+        academico: 'bg-blue-700',
+        aniversario: 'bg-amber-600',
+        deportes: 'bg-emerald-600',
+      };
+
+      grillaGaleria.innerHTML = listaNoticias
+        .map((item) => {
+          const colorBadge = coloresCategoria[item.Categoria] || 'bg-blue-800';
+          return `
+          <article class="galeria-item bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm tarjeta-interactiva" data-categoria="${item.Categoria}">
+            <div class="relative h-56 overflow-hidden">
+              <img
+                src="${item.ImagenUrl}"
+                alt="${item.Titulo}"
+                class="w-full h-full object-cover"
+              />
+              <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${colorBadge} text-white shadow">
+                ${item.EtiquetaVisible}
+              </span>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                <i class="fa-solid fa-location-dot text-amber-600"></i>
+                <span>${item.UbicacionFecha}</span>
+              </div>
+              <h3 class="text-lg font-extrabold text-faustiniano-900 mb-2">
+                ${item.Titulo}
+              </h3>
+              <p class="text-sm text-slate-600 leading-relaxed">
+                ${item.Resumen}
+              </p>
+            </div>
+          </article>`;
+        })
+        .join('');
+    }
+  };
+
+  // Sincronizar Estadísticas, Vacantes, Comunicados y Galería desde SQL Server 2022 o Respaldo Nube
   const cargarDatosDesdeSqlServer = async () => {
     try {
       const resp = await fetch('/api/publico');
-      if (!resp.ok) return;
+      if (!resp.ok) throw new Error('Modo Nube');
       const data = await resp.json();
-      if (!data.ok) return;
-
-      // 1. Actualizar contadores si existen datos en dbo.EstadisticasInstitucionales
-      if (data.estadisticas) {
-        const cAnios = document.getElementById('contador-anios');
-        const cDoc = document.getElementById('contador-docentes');
-        const cEst = document.getElementById('contador-estudiantes');
-        const cAmb = document.getElementById('contador-ambientes');
-
-        if (cAnios) cAnios.setAttribute('data-meta', data.estadisticas.AniosTrayectoria);
-        if (cDoc) cDoc.setAttribute('data-meta', data.estadisticas.TotalDocentes);
-        if (cEst) cEst.setAttribute('data-meta', data.estadisticas.TotalEstudiantes);
-        if (cAmb) cAmb.setAttribute('data-meta', data.estadisticas.TotalAmbientes);
-
-        if (contadoresIniciados) {
-          animarContadores();
-        }
-      }
-
-      // 2. Actualizar Vacantes Disponibles por Nivel desde dbo.VacantesPorNivel
-      const listaVacantes = Array.isArray(data.vacantes) ? data.vacantes : data.vacantes ? [data.vacantes] : [];
-      listaVacantes.forEach((vac) => {
-        const badgeVac = document.getElementById(`badge-vacantes-${vac.ClaveNivel}`);
-        if (badgeVac) {
-          badgeVac.textContent = `${vac.VacantesDisponibles} Vacantes`;
-        }
-      });
-
-      // 3. Actualizar Comunicado Oficial activo desde dbo.ComunicadosOficiales
-      const listaComunicados = Array.isArray(data.comunicados) ? data.comunicados : data.comunicados ? [data.comunicados] : [];
-      if (listaComunicados.length > 0) {
-        const ultimoCom = listaComunicados[0];
-        const elTitulo = document.getElementById('comunicado-titulo');
-        const elDetalle = document.getElementById('comunicado-detalle');
-        const elDirigido = document.getElementById('comunicado-dirigido');
-        const elFecha = document.getElementById('comunicado-fecha');
-
-        if (elTitulo) elTitulo.textContent = ultimoCom.Titulo;
-        if (elDetalle) elDetalle.textContent = ultimoCom.Detalle;
-        if (elDirigido) elDirigido.textContent = ultimoCom.DirigidoA;
-        if (elFecha) elFecha.textContent = ultimoCom.FechaEmision || 'Huamachuco, 2026';
-
-        // Mostrar automáticamente una vez por sesión al ingresar al portal
-        if (!sessionStorage.getItem('comunicado_visto_ie82115')) {
+      if (!data.ok) throw new Error('Sin datos');
+      aplicarDatosEnPortada(data);
+    } catch (e) {
+      try {
+        const guardado = localStorage.getItem(CLAVE_BD_NUBE);
+        if (guardado) {
+          aplicarDatosEnPortada(JSON.parse(guardado));
+        } else if (!sessionStorage.getItem('comunicado_visto_ie82115')) {
           sessionStorage.setItem('comunicado_visto_ie82115', '1');
           setTimeout(abrirModalComunicado, 1200);
         }
-      }
-
-      // 4. Renderizar Noticias y Eventos desde dbo.NoticiasEventos en SQL Server
-      const grillaGaleria = document.getElementById('grilla-galeria-eventos');
-      const listaNoticias = Array.isArray(data.noticias) ? data.noticias : data.noticias ? [data.noticias] : [];
-
-      if (grillaGaleria && listaNoticias.length > 0) {
-        const coloresCategoria = {
-          civico: 'bg-red-600',
-          academico: 'bg-blue-700',
-          aniversario: 'bg-amber-600',
-          deportes: 'bg-emerald-600',
-        };
-
-        grillaGaleria.innerHTML = listaNoticias
-          .map((item) => {
-            const colorBadge = coloresCategoria[item.Categoria] || 'bg-blue-800';
-            return `
-            <article class="galeria-item bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm tarjeta-interactiva" data-categoria="${item.Categoria}">
-              <div class="relative h-56 overflow-hidden">
-                <img
-                  src="${item.ImagenUrl}"
-                  alt="${item.Titulo}"
-                  class="w-full h-full object-cover"
-                />
-                <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${colorBadge} text-white shadow">
-                  ${item.EtiquetaVisible}
-                </span>
-              </div>
-              <div class="p-6">
-                <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                  <i class="fa-solid fa-location-dot text-amber-600"></i>
-                  <span>${item.UbicacionFecha}</span>
-                </div>
-                <h3 class="text-lg font-extrabold text-faustiniano-900 mb-2">
-                  ${item.Titulo}
-                </h3>
-                <p class="text-sm text-slate-600 leading-relaxed">
-                  ${item.Resumen}
-                </p>
-              </div>
-            </article>`;
-          })
-          .join('');
-      }
-    } catch (e) {
-      // Si se abre el archivo sin servidor, conserva el contenido estático por defecto
+      } catch (err) {}
     }
   };
 
@@ -534,12 +548,34 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, dni, telefono, correo, nivel, motivo, mensaje }),
       });
+      if (!resp.ok) throw new Error('Modo Nube');
       const resultado = await resp.json();
       if (resultado.ok && resultado.codigo) {
         codigoExpediente = resultado.codigo;
       }
     } catch (err) {
-      // Respaldo local si se usa sin servidor
+      // Guardar también en la base de datos persistente del navegador para GitHub Pages
+      try {
+        const guardado = JSON.parse(localStorage.getItem(CLAVE_BD_NUBE) || 'null');
+        if (guardado && Array.isArray(guardado.solicitudes)) {
+          const nuevoId = guardado.solicitudes.reduce((m, s) => Math.max(m, s.IdSolicitud || 0), 0) + 1;
+          guardado.solicitudes.unshift({
+            IdSolicitud: nuevoId,
+            CodigoExpediente: codigoExpediente,
+            NombreApoderado: nombre,
+            DniApoderado: dni,
+            Telefono: telefono,
+            Correo: correo,
+            NivelInteres: nivel,
+            MotivoConsulta: motivo,
+            Mensaje: mensaje,
+            Estado: 'Pendiente',
+            ObservacionAdmin: 'Registrado desde Portal Web',
+            FechaRegistro: new Date().toLocaleString('es-PE'),
+          });
+          localStorage.setItem(CLAVE_BD_NUBE, JSON.stringify(guardado));
+        }
+      } catch (e) {}
     }
 
     if (codigoSeguimientoSpan) codigoSeguimientoSpan.textContent = codigoExpediente;

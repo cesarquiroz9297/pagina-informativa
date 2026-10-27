@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * Script del Panel Administrativo conectado a SQL Server 2022 (DB_IE82115_JFSC)
+ * Script del Panel Administrativo Híbrido (SQL Server 2022 + Nube GitHub Pages)
  * Institución: I.E. N° 82115 "José Faustino Sánchez Carrión" - Huamachuco
  * UGEL Sánchez Carrión - DRE La Libertad
  * Autor: César Quiroz
@@ -8,6 +8,152 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
+
+  // Semilla inicial idéntica a la base de datos SQL Server 2022 (DB_IE82115_JFSC)
+  const obtenerSemillaInicial = () => ({
+    estadisticas: {
+      IdEstadistica: 1,
+      AniosTrayectoria: 60,
+      TotalDocentes: 65,
+      TotalEstudiantes: 1250,
+      TotalAmbientes: 38,
+      AnioEscolar: '2026',
+      MatriculaAbierta: true,
+    },
+    solicitudes: [
+      {
+        IdSolicitud: 3,
+        CodigoExpediente: 'IE82115-HCO-1105',
+        NombreApoderado: 'Rosa Angélica Otiniano Vera',
+        DniApoderado: '43981205',
+        Telefono: '944321789',
+        Correo: 'rosa.otiniano@gmail.com',
+        NivelInteres: 'Nivel Secundaria (1.° a 5.° año)',
+        MotivoConsulta: 'Vacante y Matrícula Nueva',
+        Mensaje: 'Consulta de requisitos para ingreso a 1.° año de educación secundaria 2026.',
+        Estado: 'Atendido',
+        ObservacionAdmin: 'Se brindó orientación presencial en Av. 10 de Julio 281',
+        FechaRegistro: '27/10/2026 08:15',
+      },
+      {
+        IdSolicitud: 2,
+        CodigoExpediente: 'IE82115-HCO-1089',
+        NombreApoderado: 'Carlos Alberto Rebaza Cuba',
+        DniApoderado: '41257896',
+        Telefono: '949876123',
+        Correo: 'crebaza@hotmail.com',
+        NivelInteres: 'Nivel Primaria (1.° a 6.° grado)',
+        MotivoConsulta: 'Traslado de Matrícula',
+        Mensaje: 'Deseo trasladar a mi menor hijo al 3.° grado de primaria desde otra institución de la provincia.',
+        Estado: 'En Revisión',
+        ObservacionAdmin: 'Validando código modular en SIAGIE',
+        FechaRegistro: '27/10/2026 09:30',
+      },
+      {
+        IdSolicitud: 1,
+        CodigoExpediente: 'IE82115-HCO-1042',
+        NombreApoderado: 'María Elena Paredes Ríos',
+        DniApoderado: '45892310',
+        Telefono: '948512340',
+        Correo: 'mparedes@gmail.com',
+        NivelInteres: 'Nivel Inicial (3 a 5 años)',
+        MotivoConsulta: 'Vacante y Matrícula Nueva',
+        Mensaje: 'Solicito información sobre vacantes disponibles para aula de 4 años en el turno mañana.',
+        Estado: 'Pendiente',
+        ObservacionAdmin: 'Por contactar vía WhatsApp',
+        FechaRegistro: '27/10/2026 10:45',
+      },
+    ],
+    noticias: [
+      {
+        IdNoticia: 6,
+        Titulo: 'Festidanza Escolar: Revalorando nuestras tradiciones andinas',
+        Categoria: 'civico',
+        EtiquetaVisible: 'Identidad Cultural',
+        UbicacionFecha: 'Patrimonio de Sánchez Carrión',
+        Resumen: 'Integración de padres de familia, docentes y alumnos difundiendo el folklore de Huamachuco, Marcahuamachuco y Wiracochapampa.',
+        ImagenUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        IdNoticia: 5,
+        Titulo: 'Festival de Lectura y Concurso de Oratoria Faustiniana',
+        Categoria: 'academico',
+        EtiquetaVisible: 'Humanidades y Lectura',
+        UbicacionFecha: 'Concurso de Oratoria "El Tribuno"',
+        Resumen: 'Estudiantes de los tres niveles expresaron su talento literario y capacidad argumentativa inspirados en las cartas del Solitario de Sayán.',
+        ImagenUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        IdNoticia: 4,
+        Titulo: 'Campeones en los Juegos Escolares y Olimpiadas Internas',
+        Categoria: 'deportes',
+        EtiquetaVisible: 'Deporte Escolar',
+        UbicacionFecha: 'Juegos Escolares Deportivos',
+        Resumen: 'Nuestras selecciones de fútbol, vóley, futsal y atletismo demostraron disciplina, trabajo en equipo y juego limpio en cada jornada.',
+        ImagenUrl: 'https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        IdNoticia: 3,
+        Titulo: 'Verbena Artística, Concurso de Poesía y Reencuentro de Exalumnos',
+        Categoria: 'aniversario',
+        EtiquetaVisible: 'Aniversario Institucional',
+        UbicacionFecha: 'Semana Jubilar Faustiniana',
+        Resumen: 'Con danzas tradicionales como la Contradanza de Huamachuco, antorchas y velada cultural, celebramos un año más de vida institucional.',
+        ImagenUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        IdNoticia: 2,
+        Titulo: 'Destacada participación en la Feria de Ciencias Eureka y ONEM',
+        Categoria: 'academico',
+        EtiquetaVisible: 'Logro Académico',
+        UbicacionFecha: 'UGEL Sánchez Carrión • ONEM y Eureka',
+        Resumen: 'Delegaciones de Primaria y Secundaria presentaron proyectos de sostenibilidad ambiental e indagación científica representándonos a nivel provincial.',
+        ImagenUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        IdNoticia: 1,
+        Titulo: 'Gallardía en el Desfile Cívico Patriótico y Homenaje al Tribuno',
+        Categoria: 'civico',
+        EtiquetaVisible: 'Actividad Cívica',
+        UbicacionFecha: 'Plaza de Armas de Huamachuco',
+        Resumen: 'Nuestra escolta, Estado Mayor y Banda de Guerra destacaron con paso marcial en las celebraciones cívicas de la provincia de Sánchez Carrión.',
+        ImagenUrl: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
+      },
+    ],
+    vacantes: [
+      { IdNivel: 1, ClaveNivel: 'inicial', NombreNivel: 'Nivel Inicial', VacantesDisponibles: 35 },
+      { IdNivel: 2, ClaveNivel: 'primaria', NombreNivel: 'Nivel Primaria', VacantesDisponibles: 48 },
+      { IdNivel: 3, ClaveNivel: 'secundaria', NombreNivel: 'Nivel Secundaria', VacantesDisponibles: 42 },
+    ],
+    comunicados: [
+      {
+        IdComunicado: 1,
+        Titulo: 'Proceso de Matrícula y Ratificación 2026',
+        Detalle: 'Se comunica a los padres de familia que la atención presencial en Secretaría (Av. 10 de Julio 281 - Huamachuco) se realiza de lunes a viernes de 7:30 a.m. a 3:30 p.m.',
+        DirigidoA: 'Padres de Familia',
+        FechaEmision: '27/10/2026 08:00',
+      },
+    ],
+  });
+
+  // Leer y guardar respaldo local para que funcione también en GitHub Pages
+  const leerBdLocal = () => {
+    try {
+      const guardado = localStorage.getItem(CLAVE_BD_NUBE);
+      if (guardado) return JSON.parse(guardado);
+    } catch (e) {}
+    const inicial = obtenerSemillaInicial();
+    guardarBdLocal(inicial);
+    return inicial;
+  };
+
+  const guardarBdLocal = (datos) => {
+    try {
+      localStorage.setItem(CLAVE_BD_NUBE, JSON.stringify(datos));
+    } catch (e) {}
+  };
+
   // Referencias de vistas y autenticación
   const vistaLogin = document.getElementById('vista-login');
   const vistaDashboard = document.getElementById('vista-dashboard');
@@ -17,16 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
   const btnRecargarSql = document.getElementById('btn-recargar-sql');
 
-  // Estado local cargado desde SQL Server 2022
-  let datosSql = {
-    estadisticas: null,
-    solicitudes: [],
-    noticias: [],
-    vacantes: [],
-    comunicados: [],
-  };
+  let datosSql = leerBdLocal();
+  let modoSqlServerReal = false;
 
-  // Mostrar notificación de confirmación
   const mostrarNotificacion = (mensaje) => {
     const alerta = document.getElementById('notificacion-admin');
     const texto = document.getElementById('texto-notificacion-admin');
@@ -39,13 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* --------------------------------------------------------------------------
-   * 1. AUTENTICACIÓN CONTRA SQL SERVER (`dbo.UsuariosAdministradores`)
+   * 1. AUTENTICACIÓN CONTRA SQL SERVER O MODO NUBE GITHUB PAGES
    * -------------------------------------------------------------------------- */
   const verificarSesionGuardada = () => {
     const sesion = sessionStorage.getItem('sesion_admin_ie82115');
     if (sesion) {
-      const usuario = JSON.parse(sesion);
-      activarDashboard(usuario);
+      activarDashboard(JSON.parse(sesion));
     }
   };
 
@@ -70,24 +208,26 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, clave }),
       });
+      if (!resp.ok) throw new Error('Sin API local');
       const data = await resp.json();
 
       if (data.ok) {
         sessionStorage.setItem('sesion_admin_ie82115', JSON.stringify(data.usuario));
         activarDashboard(data.usuario);
+        return;
       } else {
         textoErrorLogin.textContent = data.mensaje || 'Credenciales incorrectas.';
         errorLogin.classList.remove('hidden');
+        return;
       }
     } catch (err) {
-      // Modo compatible con GitHub Pages cuando se abre en internet sin el servidor local
       if (
         (usuario === 'admin' && clave === 'faustiniano2026') ||
         (usuario === 'secretaria' && clave === 'huamachuco2026')
       ) {
         const usuarioDemo = {
           NombreCompleto: usuario === 'admin' ? 'Dirección General I.E. 82115' : 'Mesa de Partes y SIAGIE',
-          Cargo: 'Modo Web GitHub Pages',
+          Cargo: 'Sesión Activa',
           Rol: 'Administrador',
         };
         sessionStorage.setItem('sesion_admin_ie82115', JSON.stringify(usuarioDemo));
@@ -133,33 +273,43 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* --------------------------------------------------------------------------
-   * 3. CARGAR TODOS LOS DATOS EN VIVO DESDE SQL SERVER 2022
+   * 3. CARGAR DATOS DESDE SQL SERVER 2022 (O RESPALDO PERSISTENTE EN NUBE)
    * -------------------------------------------------------------------------- */
+  const renderizarTodo = () => {
+    actualizarKpis();
+    renderizarTablaSolicitudes();
+    renderizarNoticiasAdmin();
+    rellenarFormularioEstadisticas();
+    renderizarComunicadosAdmin();
+  };
+
   const cargarDatosDesdeSqlServer = async () => {
     try {
       const respuesta = await fetch('/api/admin/datos');
+      if (!respuesta.ok) throw new Error('Modo GitHub Pages');
       const data = await respuesta.json();
-      if (!data.ok) return;
+      if (!data.ok) throw new Error('Sin respuesta SQL');
 
+      modoSqlServerReal = true;
       datosSql.estadisticas = data.estadisticas;
       datosSql.solicitudes = Array.isArray(data.solicitudes) ? data.solicitudes : data.solicitudes ? [data.solicitudes] : [];
       datosSql.noticias = Array.isArray(data.noticias) ? data.noticias : data.noticias ? [data.noticias] : [];
       datosSql.vacantes = Array.isArray(data.vacantes) ? data.vacantes : data.vacantes ? [data.vacantes] : [];
       datosSql.comunicados = Array.isArray(data.comunicados) ? data.comunicados : data.comunicados ? [data.comunicados] : [];
 
-      actualizarKpis();
-      renderizarTablaSolicitudes();
-      renderizarNoticiasAdmin();
-      rellenarFormularioEstadisticas();
-      renderizarComunicadosAdmin();
+      guardarBdLocal(datosSql);
+      renderizarTodo();
     } catch (error) {
-      console.error('Error al consultar SQL Server:', error);
+      // Si se abre en GitHub Pages, carga la base de datos persistente del navegador con todas las tablas
+      modoSqlServerReal = false;
+      datosSql = leerBdLocal();
+      renderizarTodo();
     }
   };
 
   btnRecargarSql?.addEventListener('click', () => {
     cargarDatosDesdeSqlServer();
-    mostrarNotificacion('Datos sincronizados en tiempo real desde SQL Server 2022.');
+    mostrarNotificacion('Datos sincronizados correctamente.');
   });
 
   const actualizarKpis = () => {
@@ -175,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* --------------------------------------------------------------------------
-   * 4. GESTIÓN DE SOLICITUDES DE MATRÍCULA Y MESA DE PARTES (`SolicitudesAdmision`)
+   * 4. GESTIÓN DE SOLICITUDES (`dbo.SolicitudesAdmision`)
    * -------------------------------------------------------------------------- */
   const inputBuscarSolicitud = document.getElementById('buscar-solicitud');
   const selectFiltroEstado = document.getElementById('filtro-estado-solicitud');
@@ -267,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <button
               type="button"
               data-eliminar-solicitud="${sol.IdSolicitud}"
-              title="Eliminar registro de SQL Server"
+              title="Eliminar registro"
               class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white border border-red-200 transition"
             >
               <i class="fa-solid fa-trash-can text-xs"></i>
@@ -277,35 +427,46 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .join('');
 
-    // Eventos para cambiar estado directamente en SQL Server
     tbodySolicitudes.querySelectorAll('[data-cambiar-estado]').forEach((select) => {
       select.addEventListener('change', async () => {
         const idSolicitud = parseInt(select.getAttribute('data-cambiar-estado'), 10);
         const nuevoEstado = select.value;
-        await fetch('/api/solicitudes/estado', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            idSolicitud,
-            estado: nuevoEstado,
-            observacion: `Actualizado a ${nuevoEstado} desde el Panel Administrativo`,
-          }),
-        });
-        mostrarNotificacion(`Expediente actualizado a "${nuevoEstado}" en SQL Server.`);
+
+        // Actualizar en memoria / localStorage inmediatamente
+        const item = datosSql.solicitudes.find((s) => s.IdSolicitud === idSolicitud);
+        if (item) item.Estado = nuevoEstado;
+        guardarBdLocal(datosSql);
+
+        if (modoSqlServerReal) {
+          await fetch('/api/solicitudes/estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              idSolicitud,
+              estado: nuevoEstado,
+              observacion: `Actualizado a ${nuevoEstado}`,
+            }),
+          });
+        }
+        mostrarNotificacion(`Expediente actualizado a "${nuevoEstado}".`);
         cargarDatosDesdeSqlServer();
       });
     });
 
-    // Eventos para eliminar solicitud en SQL Server
     tbodySolicitudes.querySelectorAll('[data-eliminar-solicitud]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const idSolicitud = parseInt(btn.getAttribute('data-eliminar-solicitud'), 10);
-        await fetch('/api/solicitudes/eliminar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idSolicitud }),
-        });
-        mostrarNotificacion('Solicitud eliminada de SQL Server.');
+        datosSql.solicitudes = datosSql.solicitudes.filter((s) => s.IdSolicitud !== idSolicitud);
+        guardarBdLocal(datosSql);
+
+        if (modoSqlServerReal) {
+          await fetch('/api/solicitudes/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idSolicitud }),
+          });
+        }
+        mostrarNotificacion('Solicitud eliminada correctamente.');
         cargarDatosDesdeSqlServer();
       });
     });
@@ -315,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
   selectFiltroEstado?.addEventListener('change', renderizarTablaSolicitudes);
 
   /* --------------------------------------------------------------------------
-   * 5. GESTIÓN DE NOTICIAS Y EVENTOS (`dbo.NoticiasEventos`) + SUBIDA DE IMAGEN
+   * 5. GESTIÓN DE NOTICIAS Y EVENTOS + SUBIDA DE IMAGEN DESDE DISPOSITIVO
    * -------------------------------------------------------------------------- */
   const formNoticia = document.getElementById('form-noticia');
   const listaNoticiasAdmin = document.getElementById('lista-noticias-admin');
@@ -326,49 +487,60 @@ document.addEventListener('DOMContentLoaded', () => {
   const nombreArchivoSpan = document.getElementById('nombre-archivo-seleccionado');
   const badgeEstadoImagen = document.getElementById('badge-estado-imagen');
 
-  // Al elegir una foto desde el dispositivo (PC o celular), subirla a img/eventos/
-  inputArchivoImagen?.addEventListener('change', (e) => {
+  // Comprimir imagen en Canvas para que sea ligera tanto en SQL Server como en GitHub Pages
+  const comprimirImagenBase64 = (archivo) =>
+    new Promise((resolve) => {
+      const lector = new FileReader();
+      lector.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxAncho = 900;
+          const escala = img.width > maxAncho ? maxAncho / img.width : 1;
+          canvas.width = Math.round(img.width * escala);
+          canvas.height = Math.round(img.height * escala);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = e.target.result;
+      };
+      lector.readAsDataURL(archivo);
+    });
+
+  inputArchivoImagen?.addEventListener('change', async (e) => {
     const archivo = e.target.files?.[0];
     if (!archivo) return;
 
-    nombreArchivoSpan.textContent = `Subiendo: ${archivo.name}...`;
-    const lector = new FileReader();
+    nombreArchivoSpan.textContent = `Procesando imagen: ${archivo.name}...`;
+    const base64Comprimido = await comprimirImagenBase64(archivo);
 
-    lector.onload = async (eventoLectura) => {
-      const base64Data = eventoLectura.target?.result;
-      if (!base64Data) return;
+    if (vistaPreviaImagen) vistaPreviaImagen.src = base64Comprimido;
 
-      // Mostrar vista previa inmediata en pantalla
-      if (vistaPreviaImagen) vistaPreviaImagen.src = base64Data;
+    try {
+      const resp = await fetch('/api/subir-imagen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombreArchivo: archivo.name,
+          base64: base64Comprimido,
+        }),
+      });
+      if (!resp.ok) throw new Error('Modo GitHub Pages');
+      const data = await resp.json();
 
-      try {
-        const resp = await fetch('/api/subir-imagen', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nombreArchivo: archivo.name,
-            base64: base64Data,
-          }),
-        });
-        const data = await resp.json();
-
-        if (data.ok && data.ruta) {
-          document.getElementById('noticia-imagen').value = data.ruta;
-          nombreArchivoSpan.textContent = `Foto guardada en: ${data.ruta}`;
-          if (badgeEstadoImagen) badgeEstadoImagen.textContent = data.ruta;
-          mostrarNotificacion(`Imagen subida desde tu dispositivo a ${data.ruta}`);
-        } else {
-          document.getElementById('noticia-imagen').value = base64Data;
-          nombreArchivoSpan.textContent = `Foto cargada: ${archivo.name}`;
-        }
-      } catch (err) {
-        // Respaldo automático si se usa en GitHub Pages sin servidor local
-        document.getElementById('noticia-imagen').value = base64Data;
-        nombreArchivoSpan.textContent = `Foto lista: ${archivo.name}`;
+      if (data.ok && data.ruta) {
+        document.getElementById('noticia-imagen').value = data.ruta;
+        nombreArchivoSpan.textContent = `Foto guardada en: ${data.ruta}`;
+        if (badgeEstadoImagen) badgeEstadoImagen.textContent = data.ruta;
+        mostrarNotificacion(`Imagen guardada en ${data.ruta}`);
       }
-    };
-
-    lector.readAsDataURL(archivo);
+    } catch (err) {
+      document.getElementById('noticia-imagen').value = base64Comprimido;
+      nombreArchivoSpan.textContent = `Foto lista desde tu dispositivo: ${archivo.name}`;
+      if (badgeEstadoImagen) badgeEstadoImagen.textContent = 'Lista para publicar';
+      mostrarNotificacion('Imagen cargada desde tu dispositivo correctamente.');
+    }
   });
 
   const renderizarNoticiasAdmin = () => {
@@ -391,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
         <div class="px-4 py-2.5 bg-white border-t border-slate-200 flex items-center justify-between">
-          <span class="text-[11px] font-bold uppercase text-slate-400">ID SQL: #${n.IdNoticia}</span>
+          <span class="text-[11px] font-bold uppercase text-slate-400">ID: #${n.IdNoticia}</span>
           <div class="space-x-1.5">
             <button type="button" data-editar-noticia="${n.IdNoticia}" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-700 text-blue-800 hover:text-white text-xs font-bold transition">
               <i class="fa-solid fa-pen"></i> Editar
@@ -405,7 +577,6 @@ document.addEventListener('DOMContentLoaded', () => {
       )
       .join('');
 
-    // Botones Editar Noticia
     listaNoticiasAdmin.querySelectorAll('[data-editar-noticia]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = parseInt(btn.getAttribute('data-editar-noticia'), 10);
@@ -430,16 +601,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Botones Eliminar Noticia
     listaNoticiasAdmin.querySelectorAll('[data-eliminar-noticia]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const idNoticia = parseInt(btn.getAttribute('data-eliminar-noticia'), 10);
-        await fetch('/api/noticias/eliminar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idNoticia }),
-        });
-        mostrarNotificacion('Evento eliminado de SQL Server 2022.');
+        datosSql.noticias = datosSql.noticias.filter((n) => n.IdNoticia !== idNoticia);
+        guardarBdLocal(datosSql);
+
+        if (modoSqlServerReal) {
+          await fetch('/api/noticias/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idNoticia }),
+          });
+        }
+        mostrarNotificacion('Evento eliminado correctamente.');
         cargarDatosDesdeSqlServer();
       });
     });
@@ -459,8 +634,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   formNoticia?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const idActual = parseInt(document.getElementById('noticia-id').value || '0', 10);
     const payload = {
-      idNoticia: parseInt(document.getElementById('noticia-id').value || '0', 10),
+      idNoticia: idActual,
       titulo: document.getElementById('noticia-titulo').value.trim(),
       categoria: document.getElementById('noticia-categoria').value,
       etiqueta: document.getElementById('noticia-etiqueta').value.trim(),
@@ -469,14 +645,43 @@ document.addEventListener('DOMContentLoaded', () => {
       resumen: document.getElementById('noticia-resumen').value.trim(),
     };
 
-    await fetch('/api/noticias/guardar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    if (idActual > 0) {
+      const idx = datosSql.noticias.findIndex((n) => n.IdNoticia === idActual);
+      if (idx !== -1) {
+        datosSql.noticias[idx] = {
+          ...datosSql.noticias[idx],
+          Titulo: payload.titulo,
+          Categoria: payload.categoria,
+          EtiquetaVisible: payload.etiqueta,
+          UbicacionFecha: payload.ubicacion,
+          ImagenUrl: payload.imagenUrl,
+          Resumen: payload.resumen,
+        };
+      }
+    } else {
+      const nuevoId = datosSql.noticias.reduce((max, n) => Math.max(max, n.IdNoticia || 0), 0) + 1;
+      datosSql.noticias.unshift({
+        IdNoticia: nuevoId,
+        Titulo: payload.titulo,
+        Categoria: payload.categoria,
+        EtiquetaVisible: payload.etiqueta,
+        UbicacionFecha: payload.ubicacion,
+        ImagenUrl: payload.imagenUrl,
+        Resumen: payload.resumen,
+      });
+    }
+    guardarBdLocal(datosSql);
+
+    if (modoSqlServerReal) {
+      await fetch('/api/noticias/guardar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    }
 
     limpiarFormularioNoticia();
-    mostrarNotificacion('Noticia guardada en SQL Server y publicada en la web.');
+    mostrarNotificacion('Noticia guardada y publicada en la página principal.');
     cargarDatosDesdeSqlServer();
   });
 
@@ -513,13 +718,29 @@ document.addEventListener('DOMContentLoaded', () => {
       vacantesSecundaria: parseInt(document.getElementById('vac-secundaria').value, 10),
     };
 
-    await fetch('/api/estadisticas/guardar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    datosSql.estadisticas = {
+      ...datosSql.estadisticas,
+      AniosTrayectoria: payload.aniosTrayectoria,
+      TotalDocentes: payload.totalDocentes,
+      TotalEstudiantes: payload.totalEstudiantes,
+      TotalAmbientes: payload.totalAmbientes,
+    };
+    datosSql.vacantes = [
+      { IdNivel: 1, ClaveNivel: 'inicial', NombreNivel: 'Nivel Inicial', VacantesDisponibles: payload.vacantesInicial },
+      { IdNivel: 2, ClaveNivel: 'primaria', NombreNivel: 'Nivel Primaria', VacantesDisponibles: payload.vacantesPrimaria },
+      { IdNivel: 3, ClaveNivel: 'secundaria', NombreNivel: 'Nivel Secundaria', VacantesDisponibles: payload.vacantesSecundaria },
+    ];
+    guardarBdLocal(datosSql);
 
-    mostrarNotificacion('Contadores y vacantes actualizados en SQL Server 2022.');
+    if (modoSqlServerReal) {
+      await fetch('/api/estadisticas/guardar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    }
+
+    mostrarNotificacion('Contadores y vacantes actualizados exitosamente.');
     cargarDatosDesdeSqlServer();
   });
 
@@ -541,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </span>
           <h4 class="font-extrabold text-faustiniano-900 text-sm mt-1.5">${c.Titulo}</h4>
           <p class="text-xs text-slate-600 mt-1">${c.Detalle}</p>
-          <span class="text-[11px] text-slate-400 mt-1 block">Publicado: ${c.FechaEmision}</span>
+          <span class="text-[11px] text-slate-400 mt-1 block">Publicado: ${c.FechaEmision || 'Hoy'}</span>
         </div>
         <button type="button" data-eliminar-comunicado="${c.IdComunicado}" class="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-600 text-red-700 hover:text-white text-xs font-bold transition shrink-0">
           <i class="fa-solid fa-trash"></i>
@@ -553,12 +774,17 @@ document.addEventListener('DOMContentLoaded', () => {
     listaComunicadosAdmin.querySelectorAll('[data-eliminar-comunicado]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const idComunicado = parseInt(btn.getAttribute('data-eliminar-comunicado'), 10);
-        await fetch('/api/comunicados/eliminar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idComunicado }),
-        });
-        mostrarNotificacion('Comunicado eliminado de SQL Server.');
+        datosSql.comunicados = datosSql.comunicados.filter((c) => c.IdComunicado !== idComunicado);
+        guardarBdLocal(datosSql);
+
+        if (modoSqlServerReal) {
+          await fetch('/api/comunicados/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idComunicado }),
+          });
+        }
+        mostrarNotificacion('Comunicado eliminado.');
         cargarDatosDesdeSqlServer();
       });
     });
@@ -572,14 +798,26 @@ document.addEventListener('DOMContentLoaded', () => {
       detalle: document.getElementById('com-detalle').value.trim(),
     };
 
-    await fetch('/api/comunicados/guardar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+    const nuevoId = datosSql.comunicados.reduce((max, c) => Math.max(max, c.IdComunicado || 0), 0) + 1;
+    datosSql.comunicados.unshift({
+      IdComunicado: nuevoId,
+      Titulo: payload.titulo,
+      DirigidoA: payload.dirigidoA,
+      Detalle: payload.detalle,
+      FechaEmision: new Date().toLocaleString('es-PE'),
     });
+    guardarBdLocal(datosSql);
+
+    if (modoSqlServerReal) {
+      await fetch('/api/comunicados/guardar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    }
 
     formComunicado.reset();
-    mostrarNotificacion('Comunicado oficial publicado en SQL Server 2022.');
+    mostrarNotificacion('Comunicado oficial publicado.');
     cargarDatosDesdeSqlServer();
   });
 
