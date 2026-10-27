@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
-  const API_SQL_LOCAL = 'http://localhost:8080';
+  const API_SQL_LOCAL = 'https://len-quarterly-papua-camcorders.trycloudflare.com';
 
   const aplicarDatosEnPortada = (data) => {
     if (!data) return;

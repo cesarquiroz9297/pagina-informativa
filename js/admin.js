@@ -9,7 +9,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
-  const API_SQL_LOCAL = 'http://localhost:8080';
+  const API_SQL_LOCAL = 'https://len-quarterly-papua-camcorders.trycloudflare.com';
 
   // Semilla inicial idéntica a la base de datos SQL Server 2022 (DB_IE82115_JFSC)
   const obtenerSemillaInicial = () => ({
