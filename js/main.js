@@ -191,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
+  const API_SQL_LOCAL = 'http://localhost:8080';
 
   const aplicarDatosEnPortada = (data) => {
     if (!data) return;
@@ -289,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sincronizar Estadísticas, Vacantes, Comunicados y Galería desde SQL Server 2022 o Respaldo Nube
   const cargarDatosDesdeSqlServer = async () => {
     try {
-      const resp = await fetch('/api/publico');
+      const resp = await fetch(`${API_SQL_LOCAL}/api/publico`);
       if (!resp.ok) throw new Error('Modo Nube');
       const data = await resp.json();
       if (!data.ok) throw new Error('Sin datos');
@@ -543,7 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let codigoExpediente = `IE82115-HCO-${Math.floor(1000 + Math.random() * 9000)}`;
 
     try {
-      const resp = await fetch('/api/solicitudes', {
+      const resp = await fetch(`${API_SQL_LOCAL}/api/solicitudes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, dni, telefono, correo, nivel, motivo, mensaje }),

@@ -9,6 +9,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
+  const API_SQL_LOCAL = 'http://localhost:8080';
 
   // Semilla inicial idéntica a la base de datos SQL Server 2022 (DB_IE82115_JFSC)
   const obtenerSemillaInicial = () => ({
@@ -203,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const clave = document.getElementById('login-clave').value.trim();
 
     try {
-      const resp = await fetch('/api/login', {
+      const resp = await fetch(`${API_SQL_LOCAL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, clave }),
@@ -285,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const cargarDatosDesdeSqlServer = async () => {
     try {
-      const respuesta = await fetch('/api/admin/datos');
+      const respuesta = await fetch(`${API_SQL_LOCAL}/api/admin/datos`);
       if (!respuesta.ok) throw new Error('Modo GitHub Pages');
       const data = await respuesta.json();
       if (!data.ok) throw new Error('Sin respuesta SQL');
@@ -438,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         guardarBdLocal(datosSql);
 
         if (modoSqlServerReal) {
-          await fetch('/api/solicitudes/estado', {
+          await fetch(`${API_SQL_LOCAL}/api/solicitudes/estado`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -460,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
         guardarBdLocal(datosSql);
 
         if (modoSqlServerReal) {
-          await fetch('/api/solicitudes/eliminar', {
+          await fetch(`${API_SQL_LOCAL}/api/solicitudes/eliminar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idSolicitud }),
@@ -518,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (vistaPreviaImagen) vistaPreviaImagen.src = base64Comprimido;
 
     try {
-      const resp = await fetch('/api/subir-imagen', {
+      const resp = await fetch(`${API_SQL_LOCAL}/api/subir-imagen`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -608,7 +609,7 @@ document.addEventListener('DOMContentLoaded', () => {
         guardarBdLocal(datosSql);
 
         if (modoSqlServerReal) {
-          await fetch('/api/noticias/eliminar', {
+          await fetch(`${API_SQL_LOCAL}/api/noticias/eliminar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idNoticia }),
@@ -673,7 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
     guardarBdLocal(datosSql);
 
     if (modoSqlServerReal) {
-      await fetch('/api/noticias/guardar', {
+      await fetch(`${API_SQL_LOCAL}/api/noticias/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -733,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
     guardarBdLocal(datosSql);
 
     if (modoSqlServerReal) {
-      await fetch('/api/estadisticas/guardar', {
+      await fetch(`${API_SQL_LOCAL}/api/estadisticas/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -778,7 +779,7 @@ document.addEventListener('DOMContentLoaded', () => {
         guardarBdLocal(datosSql);
 
         if (modoSqlServerReal) {
-          await fetch('/api/comunicados/eliminar', {
+          await fetch(`${API_SQL_LOCAL}/api/comunicados/eliminar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idComunicado }),
@@ -809,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
     guardarBdLocal(datosSql);
 
     if (modoSqlServerReal) {
-      await fetch('/api/comunicados/guardar', {
+      await fetch(`${API_SQL_LOCAL}/api/comunicados/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

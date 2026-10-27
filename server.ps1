@@ -95,6 +95,10 @@ function Responder-Json {
     $response.StatusCode = $codigo
     $response.ContentType = "application/json; charset=utf-8"
     $response.AddHeader("Cache-Control", "no-store, no-cache, must-revalidate")
+    $response.AddHeader("Access-Control-Allow-Origin", "*")
+    $response.AddHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    $response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept")
+    $response.AddHeader("Access-Control-Allow-Private-Network", "true")
     $response.ContentLength64 = $bytes.Length
     $response.OutputStream.Write($bytes, 0, $bytes.Length)
     $response.OutputStream.Close()
@@ -130,6 +134,17 @@ while ($listener.IsListening) {
     $res = $contexto.Response
     $ruta = $req.Url.LocalPath
     $metodo = $req.HttpMethod
+
+    # Permitir peticiones CORS desde GitHub Pages (https://cesarquiroz9297.github.io) hacia SQL Server local
+    if ($metodo -eq "OPTIONS") {
+        $res.StatusCode = 204
+        $res.AddHeader("Access-Control-Allow-Origin", "*")
+        $res.AddHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        $res.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept")
+        $res.AddHeader("Access-Control-Allow-Private-Network", "true")
+        $res.OutputStream.Close()
+        continue
+    }
 
     try {
         # --------------------------------------------------------------------
