@@ -544,6 +544,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const resolverUrlImagen = (url) => {
+    if (!url) return 'img/logo.png';
+    if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    if (url.startsWith('img/eventos/') && window.location.hostname.includes('github.io')) {
+      return `${API_SQL_LOCAL}/${url}`;
+    }
+    return url;
+  };
+
   const renderizarNoticiasAdmin = () => {
     if (!listaNoticiasAdmin) return;
     listaNoticiasAdmin.innerHTML = datosSql.noticias
@@ -552,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 flex flex-col justify-between">
         <div>
           <div class="relative h-36 overflow-hidden">
-            <img src="${n.ImagenUrl}" alt="${n.Titulo}" class="w-full h-full object-cover" />
+            <img src="${resolverUrlImagen(n.ImagenUrl)}" alt="${n.Titulo}" class="w-full h-full object-cover" />
             <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-faustiniano-900 text-white">
               ${n.EtiquetaVisible}
             </span>
@@ -592,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('noticia-imagen').value = item.ImagenUrl;
         document.getElementById('noticia-resumen').value = item.Resumen;
 
-        if (vistaPreviaImagen) vistaPreviaImagen.src = item.ImagenUrl;
+        if (vistaPreviaImagen) vistaPreviaImagen.src = resolverUrlImagen(item.ImagenUrl);
         if (nombreArchivoSpan) nombreArchivoSpan.textContent = 'Haz clic si deseas cambiar la foto actual';
         if (badgeEstadoImagen) badgeEstadoImagen.textContent = 'Imagen Actual';
 

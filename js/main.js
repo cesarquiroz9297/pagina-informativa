@@ -193,6 +193,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const CLAVE_BD_NUBE = 'db_ie82115_jfsc_v1';
   const API_SQL_LOCAL = 'https://len-quarterly-papua-camcorders.trycloudflare.com';
 
+  // Resolver imágenes subidas desde el dispositivo (img/eventos/...) para que se vean también en GitHub Pages
+  const resolverUrlImagen = (url) => {
+    if (!url) return 'img/logo.png';
+    if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    if (url.startsWith('img/eventos/') && window.location.hostname.includes('github.io')) {
+      return `${API_SQL_LOCAL}/${url}`;
+    }
+    return url;
+  };
+
   const aplicarDatosEnPortada = (data) => {
     if (!data) return;
 
@@ -213,18 +225,105 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 2. Actualizar Vacantes Disponibles por Nivel desde dbo.VacantesPorNivel
+    // 2. Actualizar Semáforo de Vacantes, Tarjetas de Niveles y Selector de Matrícula
     const listaVacantes = Array.isArray(data.vacantes) ? data.vacantes : data.vacantes ? [data.vacantes] : [];
+    const nombresBaseSelect = {
+      inicial: 'Nivel Inicial (3 a 5 años)',
+      primaria: 'Nivel Primaria (1.° a 6.° grado)',
+      secundaria: 'Nivel Secundaria (1.° a 5.° año)',
+    };
+
     listaVacantes.forEach((vac) => {
-      const badgeVac = document.getElementById(`badge-vacantes-${vac.ClaveNivel}`);
+      const clave = vac.ClaveNivel;
+      const cupos = Math.max(0, parseInt(vac.VacantesDisponibles, 10) || 0);
+
+      // A) Etiqueta en la tarjeta del nivel
+      const badgeVac = document.getElementById(`badge-vacantes-${clave}`);
       if (badgeVac) {
-        badgeVac.textContent = `${vac.VacantesDisponibles} Vacantes`;
+        if (cupos === 0) {
+          badgeVac.textContent = 'SIN VACANTES (0)';
+          badgeVac.className = 'absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-extrabold bg-red-600 text-white shadow animate-pulse';
+        } else if (cupos <= 10) {
+          badgeVac.textContent = `¡Solo ${cupos} Vacantes!`;
+          badgeVac.className = 'absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500 text-slate-950 shadow animate-pulse';
+        } else {
+          badgeVac.textContent = `${cupos} Vacantes`;
+          badgeVac.className = 'absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white shadow';
+        }
+      }
+
+      // B) Tablero Semáforo de Vacantes en Vivo
+      const numSemaforo = document.getElementById(`semaforo-numero-${clave}`);
+      const estSemaforo = document.getElementById(`semaforo-estado-${clave}`);
+      if (numSemaforo) {
+        numSemaforo.textContent = cupos === 0 ? '0 Vacantes' : `${cupos} Vacantes`;
+      }
+      if (estSemaforo) {
+        if (cupos === 0) {
+          estSemaforo.textContent = '¡VACANTES AGOTADAS!';
+          estSemaforo.className = 'inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-red-600 text-white';
+        } else if (cupos <= 10) {
+          estSemaforo.textContent = '¡ÚLTIMAS VACANTES - SE AGOTAN!';
+          estSemaforo.className = 'inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-400 text-slate-950 animate-pulse';
+        } else {
+          estSemaforo.textContent = 'Cupos Disponibles';
+          estSemaforo.className = 'inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30';
+        }
+      }
+
+      // C) Selector del Formulario de Matrícula (#nivel-interes)
+      const opcionSelect = document.getElementById(`opcion-vacantes-${clave}`);
+      if (opcionSelect && nombresBaseSelect[clave]) {
+        if (cupos === 0) {
+          opcionSelect.textContent = `${nombresBaseSelect[clave]} — [AGOTADO: 0 VACANTES]`;
+          opcionSelect.disabled = true;
+        } else if (cupos <= 10) {
+          opcionSelect.textContent = `${nombresBaseSelect[clave]} — [¡Quedan solo ${cupos} vacantes!]`;
+          opcionSelect.disabled = false;
+        } else {
+          opcionSelect.textContent = `${nombresBaseSelect[clave]} — [${cupos} vacantes disponibles]`;
+          opcionSelect.disabled = false;
+        }
       }
     });
 
-    // 3. Actualizar Comunicado Oficial activo desde dbo.ComunicadosOficiales
+    // 3. Renderizar Comunicados Oficiales en el Tablero Principal y en el Pop-up
     const listaComunicados = Array.isArray(data.comunicados) ? data.comunicados : data.comunicados ? [data.comunicados] : [];
+    const contenedorComunicadosPortada = document.getElementById('contenedor-comunicados-portada');
+    const seccionAnuncios = document.getElementById('anuncios-oficiales');
+
     if (listaComunicados.length > 0) {
+      seccionAnuncios?.classList.remove('hidden');
+
+      if (contenedorComunicadosPortada) {
+        contenedorComunicadosPortada.innerHTML = listaComunicados
+          .map(
+            (com, idx) => `
+          <article class="bg-white rounded-2xl p-5 border ${idx === 0 ? 'border-amber-400 ring-2 ring-amber-200/60' : 'border-amber-200'} shadow-sm flex items-start gap-4 ${listaComunicados.length === 1 ? 'md:col-span-2' : ''}">
+            <div class="w-11 h-11 rounded-xl ${idx === 0 ? 'bg-red-600 text-white' : 'bg-amber-100 text-amber-700'} flex items-center justify-center text-lg shrink-0 mt-0.5 shadow-sm">
+              <i class="fa-solid fa-bullhorn"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                  Para: ${com.DirigidoA}
+                </span>
+                <span class="text-xs text-slate-500 font-semibold">
+                  <i class="fa-regular fa-clock mr-1 text-amber-600"></i>${com.FechaEmision || 'Reciente'}
+                </span>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-faustiniano-900">
+                ${com.Titulo}
+              </h3>
+              <p class="text-sm text-slate-700 mt-1 leading-relaxed">
+                ${com.Detalle}
+              </p>
+            </div>
+          </article>`
+          )
+          .join('');
+      }
+
       const ultimoCom = listaComunicados[0];
       const elTitulo = document.getElementById('comunicado-titulo');
       const elDetalle = document.getElementById('comunicado-detalle');
@@ -236,13 +335,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elDirigido) elDirigido.textContent = ultimoCom.DirigidoA;
       if (elFecha) elFecha.textContent = ultimoCom.FechaEmision || 'Huamachuco, 2026';
 
-      if (!sessionStorage.getItem('comunicado_visto_ie82115')) {
-        sessionStorage.setItem('comunicado_visto_ie82115', '1');
-        setTimeout(abrirModalComunicado, 1200);
+      // Mostrar automáticamente el pop-up si hay un comunicado nuevo que el usuario no ha visto
+      const idUltimoVisto = sessionStorage.getItem('ultimo_comunicado_id_ie82115');
+      if (String(ultimoCom.IdComunicado) !== String(idUltimoVisto)) {
+        sessionStorage.setItem('ultimo_comunicado_id_ie82115', String(ultimoCom.IdComunicado));
+        setTimeout(abrirModalComunicado, 900);
       }
+    } else {
+      seccionAnuncios?.classList.add('hidden');
     }
 
-    // 4. Renderizar Noticias y Eventos desde dbo.NoticiasEventos
+    // 4. Renderizar Noticias y Eventos desde dbo.NoticiasEventos (con soporte de fotos subidas desde el dispositivo)
     const grillaGaleria = document.getElementById('grilla-galeria-eventos');
     const listaNoticias = Array.isArray(data.noticias) ? data.noticias : data.noticias ? [data.noticias] : [];
 
@@ -257,11 +360,12 @@ document.addEventListener('DOMContentLoaded', () => {
       grillaGaleria.innerHTML = listaNoticias
         .map((item) => {
           const colorBadge = coloresCategoria[item.Categoria] || 'bg-blue-800';
+          const imgResuelta = resolverUrlImagen(item.ImagenUrl);
           return `
           <article class="galeria-item bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm tarjeta-interactiva" data-categoria="${item.Categoria}">
             <div class="relative h-56 overflow-hidden">
               <img
-                src="${item.ImagenUrl}"
+                src="${imgResuelta}"
                 alt="${item.Titulo}"
                 class="w-full h-full object-cover"
               />

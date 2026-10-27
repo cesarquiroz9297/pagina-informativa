@@ -248,17 +248,32 @@ VALUES
         }
 
         # --------------------------------------------------------------------
-        # ENDPOINT 5: Actualizar Estado de una Solicitud (UPDATE)
+        # ENDPOINT 5: Actualizar Estado de una Solicitud (UPDATE + Descuento de Vacante)
         # --------------------------------------------------------------------
         if ($ruta -eq "/api/solicitudes/estado" -and $metodo -eq "POST") {
             $datos = Leer-CuerpoJson $req
+            $actual = Consultar-Sql "SELECT TOP 1 Estado, NivelInteres FROM dbo.SolicitudesAdmision WHERE IdSolicitud = @id" @{
+                "@id" = [int]$datos.idSolicitud
+            }
+
             $sqlUpdate = "UPDATE dbo.SolicitudesAdmision SET Estado = @est, ObservacionAdmin = @obs WHERE IdSolicitud = @id"
             Ejecutar-Sql $sqlUpdate @{
                 "@est" = [string]$datos.estado
                 "@obs" = [string]$datos.observacion
                 "@id"  = [int]$datos.idSolicitud
             }
-            Responder-Json $res @{ ok = $true; mensaje = "Estado de solicitud actualizado en SQL Server." }
+
+            # Si pasa a estado "Atendido", descontar 1 vacante automáticamente del nivel correspondiente
+            if ($actual.Count -gt 0 -and $actual[0].Estado -ne "Atendido" -and [string]$datos.estado -eq "Atendido") {
+                $nivelTexto = [string]$actual[0].NivelInteres
+                $claveNivel = if ($nivelTexto -like "*Inicial*") { "inicial" } elseif ($nivelTexto -like "*Primaria*") { "primaria" } else { "secundaria" }
+                Ejecutar-Sql "UPDATE dbo.VacantesPorNivel SET VacantesDisponibles = CASE WHEN VacantesDisponibles > 0 THEN VacantesDisponibles - 1 ELSE 0 END WHERE ClaveNivel = @c" @{
+                    "@c" = $claveNivel
+                }
+                Ejecutar-Sql "UPDATE dbo.EstadisticasInstitucionales SET TotalEstudiantes = TotalEstudiantes + 1 WHERE IdEstadistica = 1" @{}
+            }
+
+            Responder-Json $res @{ ok = $true; mensaje = "Estado y vacantes actualizados en SQL Server." }
             continue
         }
 
@@ -429,6 +444,7 @@ WHERE IdEstadistica = 1
             $tipoContenido = if ($tiposMime.ContainsKey($extension)) { $tiposMime[$extension] } else { "application/octet-stream" }
             $bytesArchivo = [System.IO.File]::ReadAllBytes($archivoFisico)
             $res.ContentType = $tipoContenido
+            $res.AddHeader("Access-Control-Allow-Origin", "*")
             $res.ContentLength64 = $bytesArchivo.Length
             $res.StatusCode = 200
             $res.OutputStream.Write($bytesArchivo, 0, $bytesArchivo.Length)
